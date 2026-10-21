@@ -8,7 +8,10 @@
     "sync": "node --env-file=.env scripts/sync-gsheet.mjs",
     "sync:dry": "node --env-file=.env scripts/sync-gsheet.mjs --dry-run",
     "users": "node --env-file=.env scripts/create-users.mjs data/users.csv",
-    "users:dry": "node --env-file=.env scripts/create-users.mjs data/users.csv --dry-run"
+    "users:dry": "node --env-file=.env scripts/create-users.mjs data/users.csv --dry-run",
+    "sync:pricing": "node --env-file=.env scripts/sync-pricing.mjs",
+    "sync:pricing:dry": "node --env-file-if-exists=.env scripts/sync-pricing.mjs --dry-run",
+    "check:pricing": "node scripts/check-pricing-copy.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0",

@@ -32,6 +32,9 @@ export function mapError(err) {
   if (code === 'PGRST116' || status === 404 || /Job not found/i.test(msg)) {
     return { kind: 'notfound', title: 'Not found', message: 'It does not exist, or your role cannot see it.' };
   }
+  if (code === '40001') {
+    return { kind: 'conflict', title: 'Saved by someone else', message: msg };
+  }
   if (code === '23505' || status === 409) {
     return { kind: 'conflict', title: 'Already exists', message: /already exists/i.test(msg) ? msg : 'A record with the same code or name already exists.' };
   }

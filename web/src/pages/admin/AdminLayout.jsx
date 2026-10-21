@@ -2,7 +2,7 @@ import { NavLink, Outlet } from 'react-router-dom';
 import { PageHead } from '../../components/ui';
 
 export default function AdminLayout() {
-  const links = [['users', 'Users & access'], ['roles', 'Roles & permissions'], ['workflow', 'Workflow'], ['audit', 'Audit log'], ['errors', 'Error log']];
+  const links = [['users', 'Users & access'], ['roles', 'Roles & permissions'], ['workflow', 'Workflow'], ['pricing', 'Price data'], ['audit', 'Audit log'], ['errors', 'Error log']];
   return (
     <>
       <PageHead crumb="Admin" title="Administration" sub="Manage the back end from here. Every change is written to the audit log." />

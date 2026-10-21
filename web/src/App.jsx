@@ -12,6 +12,9 @@ import Customers from './pages/Customers';
 import CustomerDetail from './pages/CustomerDetail';
 import Workflow from './pages/Workflow';
 import Account from './pages/Account';
+import Quotes from './pages/Quotes';
+import QuotePage from './pages/QuotePage';
+import AdminPricing from './pages/admin/Pricing';
 import AdminLayout from './pages/admin/AdminLayout';
 import AdminUsers from './pages/admin/Users';
 import AdminRoles from './pages/admin/Roles';
@@ -45,6 +48,9 @@ export default function App() {
               <Route path="jobs/:id" element={<RequirePerm perm="job.read"><JobDetail /></RequirePerm>} />
               <Route path="customers" element={<RequirePerm perm="customer.read"><Customers /></RequirePerm>} />
               <Route path="customers/:id" element={<RequirePerm perm="customer.read"><CustomerDetail /></RequirePerm>} />
+              <Route path="quotes" element={<RequirePerm perm="quote.read"><Quotes /></RequirePerm>} />
+              <Route path="quotes/new" element={<RequirePerm perm="quote.write"><QuotePage /></RequirePerm>} />
+              <Route path="quotes/:id" element={<RequirePerm perm="quote.read"><QuotePage /></RequirePerm>} />
               <Route path="workflow" element={<Workflow />} />
               <Route path="account" element={<Account />} />
               <Route path="admin" element={<RequirePerm admin><AdminLayout /></RequirePerm>}>
@@ -52,6 +58,7 @@ export default function App() {
                 <Route path="users" element={<AdminUsers />} />
                 <Route path="roles" element={<AdminRoles />} />
                 <Route path="workflow" element={<AdminWorkflow />} />
+                <Route path="pricing" element={<AdminPricing />} />
                 <Route path="audit" element={<AdminAudit />} />
                 <Route path="errors" element={<AdminErrors />} />
               </Route>

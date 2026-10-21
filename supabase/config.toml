@@ -4,3 +4,6 @@ project_id = "made-with-love-portal"
 
 [functions.admin-users]
 verify_jwt = true
+
+[functions.rates]
+verify_jwt = true

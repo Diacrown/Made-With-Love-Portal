@@ -20,7 +20,9 @@ export const RHODIUM = ['No', 'Yes', 'Partial', 'Black'];
 export const FINISHES = ['Polished', 'Matte', 'Brushed', 'Sandblast', 'Hammered'];
 export const METAL_TONES = [['single', 'Single'], ['two', 'Two tone'], ['three', 'Three tone']];
 export const STONE_TYPES = [['DIA', 'Diamond (mined)'], ['LGD', 'Lab grown'], ['GEM', 'Gemstone']];
-export const SHAPES = ['RND', 'OVL', 'PRN', 'EMR', 'CUS', 'RAD', 'PEAR', 'MQS', 'HRT', 'ASC', 'BAG', 'TRL', 'PRS', 'OEC'];
+// Price sheet (Master > StoneShape) codes: Round, Oval, Princess, Emerald, Cushion, Radiant, Pear, Marquise, Heart,
+// Asscher, Baguette, Taper, Triangle, Trilliant, Carre, Other
+export const SHAPES = ['RND', 'OVL', 'PRN', 'EME', 'SCU', 'RAD', 'PSH', 'MQS', 'HRT', 'SEM', 'BAG', 'TAP', 'TRG', 'TRN', 'CAR', 'OTH'];
 export const SETTINGS = ['Prong', 'Pave', 'Micro Pave', 'Bezel', 'Half Bezel', 'Channel', 'Flush', 'Tension', 'Bar'];
 export const SOURCES = [['B', 'Back office'], ['O', 'Office'], ['F', 'Factory'], ['C', 'Customer']];
 export const ENGRAVE_METHODS = [['laser', 'Laser'], ['hand', 'Hand'], ['raised', 'Raised (CAD)'], ['recessed', 'Recessed (CAD)']];

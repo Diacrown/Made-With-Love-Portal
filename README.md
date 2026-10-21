@@ -6,11 +6,12 @@ Supabase (Postgres + RLS) schema for the organisation-wide jewellery portal, wit
 ```
 web/                   React + Vite portal (login, role-based screens, admin) - see docs/web-app.md
 supabase/migrations/   core schema -> RBAC -> RLS -> API grants -> roles -> workflow -> app backend (in order)
-supabase/functions/    admin-users Edge Function (create / deactivate users)
+supabase/functions/    admin-users (create / deactivate users), rates (live metal + FX rates)
 supabase/seed/         demo data (fictitious) and the staff roster template
 scripts/sync-gsheet.mjs  Google Sheet (or CSV folder) -> Supabase
 .github/workflows/     manual sync workflow
-docs/                  sheet-to-table mapping + access matrix
+scripts/sync-pricing.mjs  master price sheet -> live pricing model (MWL checker)
+docs/                  mapping + access matrix, web-app guide, job workflow, quotes
 ```
 
 ## One-time setup

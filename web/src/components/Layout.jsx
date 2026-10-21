@@ -9,11 +9,12 @@ const ROLE_LABEL = {
 };
 
 function Tabs() {
-  const { isAdmin } = useAuth();
+  const { isAdmin, can } = useAuth();
   const tabs = [
     ['/', 'overview', 'Overview'],
     ['/jobs', 'jobs', 'Jobs'],
     ['/customers', 'customers', 'Customers'],
+    ...(can('quote.read') ? [['/quotes', 'quotes', 'Quotes']] : []),
     ['/workflow', 'workflow', 'How jobs move'],
     ['/account', 'account', 'My account'],
   ];

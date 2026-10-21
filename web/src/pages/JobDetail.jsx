@@ -8,6 +8,7 @@ import { checklistFor, movesFor, statusOptions } from '../lib/workflow';
 import { Card, Empty, ErrorScreen, Loading, PageHead, Pill, StagePill, useAction } from '../components/ui';
 import JobSpec from '../components/JobSpec';
 import CadTab from '../components/CadTab';
+import { JobQuotes } from './Quotes';
 
 const one = (x) => (Array.isArray(x) ? x[0] ?? null : x ?? null);
 
@@ -57,6 +58,7 @@ export default function JobDetail() {
 
   const status = ref.statusByCode[job.status_code];
   const frozen = (stage?.sort_order ?? 0) >= (ref.stageByCode.approved?.sort_order ?? 40) || status?.kind === 'cancel';
+  const canQuote = can('quote.read', job.front_office_id) || can('quote.read', job.back_office_id);
   const specEditable = (isAdmin || !frozen) && (can('job.update', job.front_office_id) || can('job.update', job.back_office_id));
   const setStatus = (code) => run(async () => {
     await q(supabase.rpc('set_job_status', { p_job: job.id, p_code: code, p_note: note.trim() || null }));
@@ -76,7 +78,7 @@ export default function JobDetail() {
         sub={job.title} />
 
       <div className="subtabs" role="tablist">
-        {[['overview', 'Overview'], ['spec', 'Specification'], ['cad', 'CAD'], ['customer', 'Customer'], ['activity', `Activity (${hist.length})`]].map(([k, l]) => (
+        {[['overview', 'Overview'], ['spec', 'Specification'], ['cad', 'CAD'], ...(canQuote ? [['quotes', 'Quotes']] : []), ['customer', 'Customer'], ['activity', `Activity (${hist.length})`]].map(([k, l]) => (
           <button key={k} role="tab" aria-selected={tab === k} className={`subtab ${tab === k ? 'active' : ''}`} onClick={() => setTab(k)}>{l}</button>
         ))}
       </div>
@@ -152,6 +154,7 @@ export default function JobDetail() {
 
       {tab === 'spec' && <JobSpec job={job} editable={specEditable} onSaved={reload} />}
       {tab === 'cad' && <CadTab job={job} onChanged={reload} />}
+      {tab === 'quotes' && canQuote && <JobQuotes job={job} />}
 
       {tab === 'customer' && (
         <div className="grid2">
