@@ -4,7 +4,7 @@ Supabase (Postgres + RLS) schema for the organisation-wide jewellery portal, wit
 "DB Schema" Google Sheet into it.
 
 ```
-supabase/migrations/   core schema -> RBAC -> RLS (applied in order)
+supabase/migrations/   core schema -> RBAC -> RLS -> API grants (applied in order)
 scripts/sync-gsheet.mjs  Google Sheet (or CSV folder) -> Supabase
 .github/workflows/     manual sync workflow
 docs/                  sheet-to-table mapping + access matrix
