@@ -1,0 +1,18 @@
+{
+  "name": "jewelry-portal",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Organisation-wide jewellery portal: Supabase schema + Google Sheet sync",
+  "scripts": {
+    "sync": "node scripts/sync-gsheet.mjs",
+    "sync:dry": "node scripts/sync-gsheet.mjs --dry-run"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "csv-parse": "^5.5.6"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
