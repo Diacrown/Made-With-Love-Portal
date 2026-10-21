@@ -6,7 +6,9 @@
   "description": "Organisation-wide jewellery portal: Supabase schema + Google Sheet sync",
   "scripts": {
     "sync": "node --env-file=.env scripts/sync-gsheet.mjs",
-    "sync:dry": "node --env-file=.env scripts/sync-gsheet.mjs --dry-run"
+    "sync:dry": "node --env-file=.env scripts/sync-gsheet.mjs --dry-run",
+    "users": "node --env-file=.env scripts/create-users.mjs data/users.csv",
+    "users:dry": "node --env-file=.env scripts/create-users.mjs data/users.csv --dry-run"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0",
