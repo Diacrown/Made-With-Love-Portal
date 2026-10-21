@@ -40,3 +40,5 @@ docs/                  sheet-to-table mapping + access matrix
 - The sheet is a seed/migration source. After go-live, counters and customers are owned by the database.
 - The service-role key bypasses RLS: keep it in `.env` / GitHub secrets only.
 - Job numbers: `PREFIX-000001` (never reset). Invoice numbers: `PREFIX-YYYY-000001` (reset yearly, calendar year).
+- The Supabase project has "Automatically expose new tables" turned off. Every migration that adds a table must also
+  grant it explicitly (see `supabase/migrations/20261021000004_grants.sql`), otherwise the API returns "permission denied".
