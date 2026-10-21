@@ -6,13 +6,14 @@ import { useRefData, OWNER_LABEL, JOB_TYPE_LABEL, statusText } from '../lib/refd
 import { useAuth } from '../auth/AuthProvider';
 import { checklistFor, movesFor, statusOptions } from '../lib/workflow';
 import { Card, Empty, ErrorScreen, Loading, PageHead, Pill, StagePill, useAction } from '../components/ui';
+import JobSpec from '../components/JobSpec';
 
 const one = (x) => (Array.isArray(x) ? x[0] ?? null : x ?? null);
 
 export default function JobDetail() {
   const { id } = useParams();
   const ref = useRefData();
-  const { can, user } = useAuth();
+  const { can, user, isAdmin } = useAuth();
   const [tab, setTab] = useState('overview');
   const [note, setNote] = useState('');
   const [run, busy] = useAction();
@@ -54,6 +55,8 @@ export default function JobDetail() {
   }, `Moved to ${mv.to.name}`);
 
   const status = ref.statusByCode[job.status_code];
+  const frozen = (stage?.sort_order ?? 0) >= (ref.stageByCode.approved?.sort_order ?? 40) || status?.kind === 'cancel';
+  const specEditable = (isAdmin || !frozen) && (can('job.update', job.front_office_id) || can('job.update', job.back_office_id));
   const setStatus = (code) => run(async () => {
     await q(supabase.rpc('set_job_status', { p_job: job.id, p_code: code, p_note: note.trim() || null }));
     setNote('');
@@ -72,7 +75,7 @@ export default function JobDetail() {
         sub={job.title} />
 
       <div className="subtabs" role="tablist">
-        {[['overview', 'Overview'], ['customer', 'Customer'], ['activity', `Activity (${hist.length})`]].map(([k, l]) => (
+        {[['overview', 'Overview'], ['spec', 'Specification'], ['customer', 'Customer'], ['activity', `Activity (${hist.length})`]].map(([k, l]) => (
           <button key={k} role="tab" aria-selected={tab === k} className={`subtab ${tab === k ? 'active' : ''}`} onClick={() => setTab(k)}>{l}</button>
         ))}
       </div>
@@ -145,6 +148,8 @@ export default function JobDetail() {
           </div>
         </>
       )}
+
+      {tab === 'spec' && <JobSpec job={job} editable={specEditable} onSaved={reload} />}
 
       {tab === 'customer' && (
         <div className="grid2">

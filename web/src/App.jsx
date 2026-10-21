@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import Overview from './pages/Overview';
 import Jobs from './pages/Jobs';
 import JobDetail from './pages/JobDetail';
+import NewJob from './pages/NewJob';
 import Customers from './pages/Customers';
 import CustomerDetail from './pages/CustomerDetail';
 import Workflow from './pages/Workflow';
@@ -40,6 +41,7 @@ export default function App() {
             <Route element={<RequireAuth />}>
               <Route index element={<Overview />} />
               <Route path="jobs" element={<RequirePerm perm="job.read"><Jobs /></RequirePerm>} />
+              <Route path="jobs/new" element={<RequirePerm perm="job.create"><NewJob /></RequirePerm>} />
               <Route path="jobs/:id" element={<RequirePerm perm="job.read"><JobDetail /></RequirePerm>} />
               <Route path="customers" element={<RequirePerm perm="customer.read"><Customers /></RequirePerm>} />
               <Route path="customers/:id" element={<RequirePerm perm="customer.read"><CustomerDetail /></RequirePerm>} />
