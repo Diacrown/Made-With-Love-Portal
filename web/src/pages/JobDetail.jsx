@@ -7,6 +7,7 @@ import { useAuth } from '../auth/AuthProvider';
 import { checklistFor, movesFor, statusOptions } from '../lib/workflow';
 import { Card, Empty, ErrorScreen, Loading, PageHead, Pill, StagePill, useAction } from '../components/ui';
 import JobSpec from '../components/JobSpec';
+import CadTab from '../components/CadTab';
 
 const one = (x) => (Array.isArray(x) ? x[0] ?? null : x ?? null);
 
@@ -75,7 +76,7 @@ export default function JobDetail() {
         sub={job.title} />
 
       <div className="subtabs" role="tablist">
-        {[['overview', 'Overview'], ['spec', 'Specification'], ['customer', 'Customer'], ['activity', `Activity (${hist.length})`]].map(([k, l]) => (
+        {[['overview', 'Overview'], ['spec', 'Specification'], ['cad', 'CAD'], ['customer', 'Customer'], ['activity', `Activity (${hist.length})`]].map(([k, l]) => (
           <button key={k} role="tab" aria-selected={tab === k} className={`subtab ${tab === k ? 'active' : ''}`} onClick={() => setTab(k)}>{l}</button>
         ))}
       </div>
@@ -150,6 +151,7 @@ export default function JobDetail() {
       )}
 
       {tab === 'spec' && <JobSpec job={job} editable={specEditable} onSaved={reload} />}
+      {tab === 'cad' && <CadTab job={job} onChanged={reload} />}
 
       {tab === 'customer' && (
         <div className="grid2">

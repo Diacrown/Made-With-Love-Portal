@@ -232,3 +232,16 @@ a.subtab:hover { text-decoration: none; color: var(--ink); }
 .file img, .file-icon { display: grid; place-items: center; width: 100%; height: 120px; object-fit: cover; background: #eceef1; color: var(--muted); font: 600 13px var(--mono); }
 .file figcaption { padding: 6px 8px; display: grid; gap: 2px; font-size: 12px; }
 .file figcaption span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* ---------- CAD ---------- */
+.cad-layout { display: grid; grid-template-columns: 240px 1fr; gap: 16px; align-items: start; }
+.cad-layout > .card { margin-bottom: 0; }
+.versions li { padding: 0; border: 0; }
+.ver { width: 100%; display: grid; grid-template-columns: auto 1fr; gap: 2px 8px; align-items: center; text-align: left; background: none; border: 1px solid transparent; border-radius: var(--radius); padding: 8px; cursor: pointer; font: inherit; }
+.ver small { grid-column: 1 / -1; }
+.ver:hover { background: var(--soft); }
+.ver.on { background: var(--brand-soft); border-color: var(--brand); }
+.calc { background: var(--soft); color: var(--muted); }
+.table td.c { text-align: center; }
+.card textarea { width: 100%; }
+.sticky-actions { position: sticky; bottom: 0; display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding: 10px 14px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 -4px 14px rgba(31, 41, 51, 0.06); z-index: 5; }
+@media (max-width: 900px) { .cad-layout { grid-template-columns: 1fr; } }
