@@ -16,6 +16,10 @@ export default function WorkflowAdmin() {
     if (!window.confirm(`Delete the move "${t.label}"? Jobs will no longer be able to make it.`)) return;
     run(async () => { await q(supabase.from('job_stage_transitions').delete().eq('id', t.id)); await ref.reload(); }, 'Move deleted');
   };
+  const updateStatus = (st, patch) => run(async () => {
+    await q(supabase.from('job_statuses').update(patch).eq('code', st.code));
+    await ref.reload();
+  }, 'Status updated');
   const updateS = (s, patch) => run(async () => {
     await q(supabase.from('job_stages').update(patch).eq('id', s.id));
     await ref.reload();
@@ -34,6 +38,28 @@ export default function WorkflowAdmin() {
                   <td><input defaultValue={s.name} maxLength={40} onBlur={(e) => e.target.value.trim() && e.target.value !== s.name && updateS(s, { name: e.target.value.trim() })} aria-label={`Name for ${s.code}`} /></td>
                   <td className="muted">{s.sort_order}</td>
                   <td><input type="checkbox" checked={s.is_active} disabled={busy} onChange={() => updateS(s, { is_active: !s.is_active })} aria-label={`${s.code} active`} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+
+      <Card title="Detailed status codes" actions={<small className="muted">Rename a status or change who may set it. Codes are fixed.</small>}>
+        <div className="table-wrap">
+          <table className="table">
+            <thead><tr><th>Code</th><th>Label</th><th>Stage</th><th>Who may set it</th></tr></thead>
+            <tbody>
+              {ref.statuses.map((st) => (
+                <tr key={st.code}>
+                  <td className="mono">{st.code}</td>
+                  <td><input defaultValue={st.label} maxLength={40} onBlur={(e) => e.target.value.trim() && e.target.value !== st.label && updateStatus(st, { label: e.target.value.trim() })} aria-label={`Label for ${st.code}`} /></td>
+                  <td>{st.stage_code ? <StagePill stage={ref.stageByCode[st.stage_code]} /> : 'Any stage'}</td>
+                  <td>
+                    <select value={st.owner_side} disabled={busy} onChange={(e) => updateStatus(st, { owner_side: e.target.value })} aria-label={`Who sets ${st.code}`}>
+                      {['front', 'back', 'either'].map((x) => <option key={x} value={x}>{OWNER_LABEL[x]}</option>)}
+                    </select>
+                  </td>
                 </tr>
               ))}
             </tbody>

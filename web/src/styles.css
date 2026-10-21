@@ -209,3 +209,6 @@ a.subtab:hover { text-decoration: none; color: var(--ink); }
   .kv { grid-template-columns: 110px 1fr; }
   .bar-row { grid-template-columns: 110px 1fr 26px; }
 }
+.status-box { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 12px; margin-bottom: 12px; background: var(--soft); border: 1px solid var(--line); border-radius: var(--radius); }
+.status-box select { width: auto; max-width: 260px; }
+.note.row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }

@@ -48,5 +48,15 @@ begin
   insert into public.job_milestones (job_id, code)
   select ins.id, unnest(j.ms::text[]) from ins join j on j.title = ins.title;
 
+  -- detailed status codes (status changes are normally only possible through set_job_status)
+  perform set_config('app.advancing', 'on', true);
+  update public.jobs set status_code = 'CRB' where title = 'Solitaire ring, catalog R2184'
+    and customer_id in (select id from public.customers where alias like 'DEMO-%');
+  update public.jobs set status_code = 'CSC' where title = 'Classic four prong bracelet'
+    and customer_id in (select id from public.customers where alias like 'DEMO-%');
+  update public.jobs set status_code = 'DEL' where title = 'Bezel solitaire set'
+    and customer_id in (select id from public.customers where alias like 'DEMO-%');
+  perform set_config('app.advancing', 'off', true);
+
   raise notice 'Demo data loaded';
 end $$;

@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase, q } from '../lib/supabase';
 import { useLoad, fmtDate } from '../lib/hooks';
 import { useRefData, JOB_TYPE_LABEL } from '../lib/refdata';
+import { Pill } from '../components/ui';
 import { useAuth } from '../auth/AuthProvider';
 import { Empty, ErrorScreen, Field, Loading, Modal, PageHead, StagePill, useAction } from '../components/ui';
 
@@ -16,7 +17,7 @@ export default function Jobs() {
 
   const { loading, error, data: jobs, reload } = useLoad(() =>
     q(supabase.from('jobs')
-      .select('id, job_no, title, job_type, stage_id, front_office_id, back_office_id, updated_at, customer:customers(alias)')
+      .select('id, job_no, title, job_type, stage_id, status_code, front_office_id, back_office_id, updated_at, customer:customers(alias)')
       .order('updated_at', { ascending: false }).limit(1000)), []);
 
   const shown = useMemo(() => (jobs || []).filter((j) => {
@@ -46,7 +47,7 @@ export default function Jobs() {
       {shown.length === 0 ? <Empty>No jobs match.</Empty> : (
         <div className="table-wrap">
           <table className="table">
-            <thead><tr><th>Job</th><th>Title</th><th>Customer</th><th>Type</th><th>Stage</th><th>Front / back office</th><th>Updated</th></tr></thead>
+            <thead><tr><th>Job</th><th>Title</th><th>Customer</th><th>Type</th><th>Stage</th><th>Status</th><th>Front / back office</th><th>Updated</th></tr></thead>
             <tbody>
               {shown.map((j) => (
                 <tr key={j.id}>
@@ -55,6 +56,7 @@ export default function Jobs() {
                   <td className="mono">{j.customer?.alias}</td>
                   <td>{JOB_TYPE_LABEL[j.job_type]}</td>
                   <td><StagePill stage={ref.stageById[j.stage_id]} /></td>
+                  <td>{j.status_code && <Pill tone={ref.statusByCode[j.status_code]?.kind === 'normal' ? 'muted' : 'bad'}>{j.status_code}</Pill>} <small className="muted">{ref.statusByCode[j.status_code]?.label}</small></td>
                   <td>{ref.officeById[j.front_office_id]?.name} → {ref.officeById[j.back_office_id]?.name || '—'}</td>
                   <td className="muted">{fmtDate(j.updated_at)}</td>
                 </tr>

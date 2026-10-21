@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { supabase, q } from '../lib/supabase';
 import { useLoad, fmtDate } from '../lib/hooks';
-import { useRefData, OWNER_LABEL, JOB_TYPE_LABEL } from '../lib/refdata';
+import { useRefData, OWNER_LABEL, JOB_TYPE_LABEL, statusText } from '../lib/refdata';
 import { useAuth } from '../auth/AuthProvider';
-import { checklistFor, movesFor } from '../lib/workflow';
+import { checklistFor, movesFor, statusOptions } from '../lib/workflow';
 import { Card, Empty, ErrorScreen, Loading, PageHead, Pill, StagePill, useAction } from '../components/ui';
 
 const one = (x) => (Array.isArray(x) ? x[0] ?? null : x ?? null);
@@ -53,6 +53,13 @@ export default function JobDetail() {
     await reload();
   }, `Moved to ${mv.to.name}`);
 
+  const status = ref.statusByCode[job.status_code];
+  const setStatus = (code) => run(async () => {
+    await q(supabase.rpc('set_job_status', { p_job: job.id, p_code: code, p_note: note.trim() || null }));
+    setNote('');
+    await reload();
+  }, code === 'RESUME' ? 'Job resumed' : `Status set to ${code}`);
+
   const record = (m) => run(async () => {
     await q(supabase.rpc('record_milestone', { p_job: job.id, p_code: m.code }));
     await reload();
@@ -61,7 +68,7 @@ export default function JobDetail() {
   return (
     <>
       <PageHead crumb={<><Link to="/jobs">Jobs</Link> / {job.job_no}</>}
-        title={<><span className="mono">{job.job_no}</span> <StagePill stage={stage} /></>}
+        title={<><span className="mono">{job.job_no}</span> <StagePill stage={stage} />{status && <Pill tone={status.kind === 'normal' ? 'muted' : 'bad'}>{statusText(status)}</Pill>}</>}
         sub={job.title} />
 
       <div className="subtabs" role="tablist">
@@ -78,8 +85,15 @@ export default function JobDetail() {
             ))}
           </ol>
 
+          {status?.kind === 'hold' && (
+            <div className="note warn row gap" role="status"><b>On hold.</b> Stage moves are paused{job.held_from_status ? ` (was ${job.held_from_status})` : ''}.
+              <button className="btn sm" disabled={busy} onClick={() => setStatus('RESUME')}>Resume</button></div>
+          )}
+          {status?.kind === 'cancel' && <div className="note bad" role="status"><b>Cancelled.</b> Only an administrator can reopen this job.</div>}
+
           <div className="grid2">
             <Card title={`Step ${pos + 1}: ${stage?.name}`} actions={stage?.owner && <small className="muted">Owner: {OWNER_LABEL[stage.owner]}</small>}>
+              <StatusPicker job={job} status={status} busy={busy} onSet={setStatus} />
               {checklist.length > 0 && (
                 <ul className="checklist">
                   {checklist.map(({ m, done, canRecord }) => (
@@ -166,7 +180,10 @@ export default function JobDetail() {
           <ul className="timeline">
             {hist.map((h) => (
               <li key={h.id}>
-                <b>{h.from_stage_id ? `${ref.stageById[h.from_stage_id]?.name} → ` : 'Created at '}{ref.stageById[h.to_stage_id]?.name}</b>
+                <b>{h.from_stage_id === h.to_stage_id
+                  ? `Status ${h.from_status || '—'} → ${h.to_status || '—'}`
+                  : `${h.from_stage_id ? `${ref.stageById[h.from_stage_id]?.name} → ` : 'Created at '}${ref.stageById[h.to_stage_id]?.name}`}</b>
+                {h.to_status && h.from_stage_id === h.to_stage_id && <small className="muted"> ({statusText(ref.statusByCode[h.to_status], false)})</small>}
                 <small className="muted"> · {who(h.changed_by)} · {fmtDate(h.changed_at)}</small>
                 {h.note && <div className="quote">{h.note}</div>}
               </li>
@@ -181,5 +198,27 @@ export default function JobDetail() {
         </Card>
       )}
     </>
+  );
+}
+
+function StatusPicker({ job, status, busy, onSet }) {
+  const ref = useRefData();
+  const { can } = useAuth();
+  const [code, setCode] = useState('');
+  const opts = statusOptions(job, ref, can);
+  const allowed = opts.filter((o) => o.allowed && (status?.kind !== 'hold' || o.s.kind === 'normal'));
+  return (
+    <div className="status-box">
+      <div><small className="muted">Detailed status</small><div><b>{status ? statusText(status) : 'None set yet'}</b></div></div>
+      {allowed.length > 0 && (
+        <div className="row gap">
+          <select value={code} onChange={(e) => setCode(e.target.value)} aria-label="New status">
+            <option value="">Change status…</option>
+            {allowed.map(({ s }) => <option key={s.code} value={s.code}>{statusText(s)}</option>)}
+          </select>
+          <button className="btn sm" disabled={!code || busy} onClick={() => { onSet(code); setCode(''); }}>Set</button>
+        </div>
+      )}
+    </div>
   );
 }

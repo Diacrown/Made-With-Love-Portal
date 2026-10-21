@@ -13,7 +13,7 @@ export default function Overview() {
 
   const { loading, error, data, reload } = useLoad(async () => {
     const [jobs, ms] = await Promise.all([
-      canJobs ? q(supabase.from('jobs').select('id, job_no, title, job_type, stage_id, front_office_id, back_office_id, updated_at').order('updated_at', { ascending: false }).limit(1000)) : [],
+      canJobs ? q(supabase.from('jobs').select('id, job_no, title, job_type, stage_id, status_code, front_office_id, back_office_id, updated_at').order('updated_at', { ascending: false }).limit(1000)) : [],
       canJobs ? q(supabase.from('job_milestones').select('job_id, code')) : [],
     ]);
     const msByJob = {};

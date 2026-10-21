@@ -1,4 +1,4 @@
-import { useRefData, OWNER_LABEL, JOB_TYPE_LABEL } from '../lib/refdata';
+import { useRefData, OWNER_LABEL, JOB_TYPE_LABEL, statusText } from '../lib/refdata';
 import { Card, PageHead, StagePill } from '../components/ui';
 
 export default function Workflow() {
@@ -20,6 +20,25 @@ export default function Workflow() {
             </li>
           ))}
         </ol>
+      </Card>
+      <Card title="Detailed status codes">
+        <p className="muted small">Each stage has its own status codes. On hold and Cancelled can be set from any stage; a held job cannot move until it is resumed.</p>
+        <div className="table-wrap">
+          <table className="table">
+            <thead><tr><th>Code</th><th>Status</th><th>Stage</th><th>Set by</th><th>Also records</th></tr></thead>
+            <tbody>
+              {ref.statuses.map((st) => (
+                <tr key={st.code}>
+                  <td className="mono">{st.code}</td>
+                  <td>{statusText(st, false)}</td>
+                  <td>{st.stage_code ? <StagePill stage={ref.stageByCode[st.stage_code]} /> : <small className="muted">Any stage</small>}</td>
+                  <td>{OWNER_LABEL[st.owner_side]}</td>
+                  <td>{st.records_milestone ? ms[st.records_milestone]?.label : st.clears_milestones?.length ? <small className="muted">Clears: {st.clears_milestones.map((c) => ms[c]?.label || c).join(', ')}</small> : '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </Card>
       <Card title="Allowed moves">
         <div className="table-wrap">
