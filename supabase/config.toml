@@ -1,0 +1,6 @@
+# Minimal Supabase CLI / GitHub integration config. Only the Edge Function declarations matter here;
+# everything else uses the project's dashboard settings.
+project_id = "made-with-love-portal"
+
+[functions.admin-users]
+verify_jwt = true
