@@ -50,13 +50,15 @@ export default function Login() {
   return (
     <div className="login-wrap">
       <div className="login-side">
-        <div className="brand big"><span className="logo" aria-hidden="true">W</span><div><b>Made With Love</b><small>Jewelry operations</small></div></div>
+        <div className="brand big"><span className="logo" aria-hidden="true">W</span><div><b>Made With Love</b><small>Mock front end · live Supabase back end</small></div></div>
+        <span className="mock-tag">MOCK FRONT END</span>
         <h1>One portal for every office.</h1>
         <p>Jobs, CAD, approvals, production and QC across Diamantra, World Shiner, Diacrown and Diamore. What you see depends on your role and office.</p>
         <ul className="ticks">
           <li>Front offices see their own customers in full.</li>
           <li>Back offices and production see job details and customer aliases only.</li>
           <li>Every change is recorded in the audit log.</li>
+          <li>The screens are a mock-up; sign-in, data, security and workflow are the real Supabase back end.</li>
         </ul>
       </div>
       <form className="login-card" onSubmit={submit} noValidate>

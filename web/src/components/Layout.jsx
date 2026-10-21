@@ -16,6 +16,7 @@ function Tabs() {
     ['/customers', 'customers', 'Customers'],
     ...(can('quote.read') ? [['/quotes', 'quotes', 'Quotes']] : []),
     ['/workflow', 'workflow', 'How jobs move'],
+    ['/backend', 'supabase', 'Back end (live)'],
     ['/account', 'account', 'My account'],
   ];
   if (isAdmin) tabs.push(['/admin', 'admin', 'Admin']);
@@ -35,8 +36,12 @@ function Shell() {
   const ref = useRefData();
   return (
     <div className="app">
+      <div className="mock-ribbon" role="note">
+        <b>MOCK FRONT END</b> · screens are a working mock-up; the data, security rules and workflow run live on the Supabase back end ·{' '}
+        <NavLink to="/backend">see the back end</NavLink>
+      </div>
       <header className="topbar">
-        <div className="brand"><span className="logo" aria-hidden="true">W</span><div><b>Made With Love</b><small>Jewelry operations</small></div></div>
+        <div className="brand"><span className="logo" aria-hidden="true">W</span><div><b>Made With Love · Mock Front End</b><small>Live Supabase back end</small></div></div>
         <div className="who">
           <div className="who-text">
             <b>{profile?.full_name || profile?.email}</b>

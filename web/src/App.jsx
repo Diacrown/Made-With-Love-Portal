@@ -12,6 +12,7 @@ import Customers from './pages/Customers';
 import CustomerDetail from './pages/CustomerDetail';
 import Workflow from './pages/Workflow';
 import Account from './pages/Account';
+import Backend from './pages/Backend';
 import Quotes from './pages/Quotes';
 import QuotePage from './pages/QuotePage';
 import AdminPricing from './pages/admin/Pricing';
@@ -53,6 +54,7 @@ export default function App() {
               <Route path="quotes/:id" element={<RequirePerm perm="quote.read"><QuotePage /></RequirePerm>} />
               <Route path="workflow" element={<Workflow />} />
               <Route path="account" element={<Account />} />
+              <Route path="backend" element={<Backend />} />
               <Route path="admin" element={<RequirePerm admin><AdminLayout /></RequirePerm>}>
                 <Route index element={<Navigate to="users" replace />} />
                 <Route path="users" element={<AdminUsers />} />

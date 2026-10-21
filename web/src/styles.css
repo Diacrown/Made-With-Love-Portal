@@ -308,3 +308,13 @@ a.subtab:hover { text-decoration: none; color: var(--ink); }
 .qdoc .qtot > div { display: flex; justify-content: space-between; padding: 3px 0; }
 .qdoc .qtot .g { font-weight: 700; font-size: 15px; border-top: 2px solid #235c56; margin-top: 4px; padding-top: 6px; }
 .qdoc .txc { color: #666; font-size: 11px; justify-content: flex-end; }
+/* ---------- mock front end labelling ---------- */
+.mock-ribbon { background: #fbf1dc; color: #6b4a00; border-bottom: 1px solid #ecd9a8; padding: 5px 20px; font-size: 12px; text-align: center; }
+.mock-ribbon a { color: #6b4a00; text-decoration: underline; }
+.mock-tag { align-self: flex-start; background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 4px; padding: 2px 8px; font: 600 11px var(--mono); letter-spacing: 0.1em; }
+.small-b { font-size: 15px !important; word-break: break-all; }
+.probes { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.probes li { display: grid; grid-template-columns: 26px 1fr auto; gap: 10px; align-items: start; padding: 8px; border: 1px solid var(--line); border-radius: var(--radius); }
+.probe-mark { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: #eceef1; font-weight: 700; }
+.probe-mark.ok { background: var(--good); color: #fff; }
+.probe-mark.bad { background: var(--bad); color: #fff; }
