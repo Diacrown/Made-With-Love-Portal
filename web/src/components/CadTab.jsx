@@ -34,7 +34,7 @@ export default function CadTab({ job, onChanged }) {
   if (error) return <ErrorNote error={error} />;
 
   const open = versions.find((v) => ['draft', 'submitted', 'revision'].includes(v.status));
-  const canCreate = stageOk && backCan('job.update') && !open;
+  const canCreate = stageOk && backCan('cad.write') && !open;
   const create = () => run(async () => {
     const v = await q(supabase.rpc('save_cad_version', {
       p_version_id: null, p_job_id: job.id,
@@ -73,7 +73,7 @@ function CadSheet({ job, version, stageOk, onSaved }) {
   const { can } = useAuth();
   const toast = useToast();
   const [run, busy] = useAction();
-  const editable = stageOk && ['draft', 'revision'].includes(version.status) && can('job.update', job.back_office_id);
+  const editable = stageOk && ['draft', 'revision'].includes(version.status) && can('cad.write', job.back_office_id);
   const canReview = version.status === 'submitted' && can('job.advance_stage', job.back_office_id);
   const [f, setF] = useState({ designer_name: version.designer_name || '', cad_date: version.cad_date || '', render_url: version.render_url || '', client_instructions: version.client_instructions || '', notes: version.notes || '' });
   const [metals, setMetals] = useState(null);
