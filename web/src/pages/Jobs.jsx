@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useLive } from '../lib/live';
 import { Link, useSearchParams } from 'react-router-dom';
 import { supabase, q } from '../lib/supabase';
 import { useLoad, fmtDate } from '../lib/hooks';
@@ -18,6 +19,15 @@ export default function Jobs() {
     q(supabase.from('jobs')
       .select('id, job_no, title, job_type, stage_id, status_code, front_office_id, back_office_id, updated_at, customer:customers(alias)')
       .order('updated_at', { ascending: false }).limit(1000)), []);
+  const [flash, setFlash] = useState(() => new Set());
+  useLive(['jobs'], (p) => {
+    reload({ silent: true });
+    const id = p.new?.id;
+    if (id) {
+      setFlash((s) => new Set(s).add(id));
+      setTimeout(() => setFlash((s) => { const n = new Set(s); n.delete(id); return n; }), 4000);
+    }
+  }, { debounce: 0 });
 
   const shown = useMemo(() => (jobs || []).filter((j) => {
     if (stageF !== 'all' && ref.stageById[j.stage_id]?.code !== stageF) return false;
@@ -49,7 +59,7 @@ export default function Jobs() {
             <thead><tr><th>Job</th><th>Title</th><th>Customer</th><th>Type</th><th>Stage</th><th>Status</th><th>Front / back office</th><th>Updated</th></tr></thead>
             <tbody>
               {shown.map((j) => (
-                <tr key={j.id}>
+                <tr key={j.id} className={flash.has(j.id) ? 'flash' : undefined}>
                   <td><Link to={`/jobs/${j.id}`} className="mono">{j.job_no}</Link></td>
                   <td>{j.title}</td>
                   <td className="mono">{j.customer?.alias}</td>

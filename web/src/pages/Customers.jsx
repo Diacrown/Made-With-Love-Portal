@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase, q } from '../lib/supabase';
 import { useLoad } from '../lib/hooks';
+import { useLive } from '../lib/live';
 import { useRefData } from '../lib/refdata';
 import { useAuth } from '../auth/AuthProvider';
 import { Empty, ErrorScreen, Field, Loading, Modal, PageHead, useAction } from '../components/ui';
@@ -16,6 +17,7 @@ export default function Customers() {
 
   const { loading, error, data, reload } = useLoad(() =>
     q(supabase.from('customers').select('id, alias, ezj_ac_num, office_id, customer_private(name, email)').order('alias')), []);
+  useLive(['customers'], () => reload({ silent: true }));
 
   const shown = useMemo(() => (data || []).filter((c) => {
     const s = search.trim().toLowerCase();

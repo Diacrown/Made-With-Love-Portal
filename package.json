@@ -11,7 +11,9 @@
     "users:dry": "node --env-file=.env scripts/create-users.mjs data/users.csv --dry-run",
     "sync:pricing": "node --env-file=.env scripts/sync-pricing.mjs",
     "sync:pricing:dry": "node --env-file-if-exists=.env scripts/sync-pricing.mjs --dry-run",
-    "check:pricing": "node scripts/check-pricing-copy.mjs"
+    "check:pricing": "node scripts/check-pricing-copy.mjs",
+    "demo:quotes": "node --env-file=.env scripts/demo-quotes.mjs",
+    "demo:quotes:dry": "node --env-file=.env scripts/demo-quotes.mjs --dry-run"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0",

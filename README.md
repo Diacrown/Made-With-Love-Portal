@@ -7,10 +7,11 @@ Supabase (Postgres + RLS) schema for the organisation-wide jewellery portal, wit
 web/                   React + Vite portal (login, role-based screens, admin) - see docs/web-app.md
 supabase/migrations/   core schema -> RBAC -> RLS -> API grants -> roles -> workflow -> app backend (in order)
 supabase/functions/    admin-users (create / deactivate users), rates (live metal + FX rates)
-supabase/seed/         demo data (fictitious) and the staff roster template
+supabase/seed/         demo data (fictitious, every module) and the staff roster template
 scripts/sync-gsheet.mjs  Google Sheet (or CSV folder) -> Supabase
 .github/workflows/     manual sync workflow
 scripts/sync-pricing.mjs  master price sheet -> live pricing model (MWL checker)
+scripts/demo-quotes.mjs   demo quotes priced from the accepted CAD (MWL engine)
 docs/                  mapping + access matrix, web-app guide, job workflow, quotes
 ```
 
@@ -37,6 +38,11 @@ docs/                  mapping + access matrix, web-app guide, job workflow, quo
    ```
    Share the sheet as "Anyone with the link: Viewer", or export tabs as CSV into `./data` and set `SHEET_CSV_DIR`.
 5. For the GitHub workflow, add repo secrets `SHEET_ID`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`.
+
+## Stakeholder demo
+
+See [docs/demo-script.md](docs/demo-script.md): load the demo (`demo_data.sql` in the SQL Editor, then
+`npm run demo:quotes`), and a two-browser walkthrough showing changes flowing live between offices.
 
 ## Notes
 

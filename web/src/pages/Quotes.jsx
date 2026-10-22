@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase, q } from '../lib/supabase';
 import { useLoad, fmtDate } from '../lib/hooks';
+import { useLive } from '../lib/live';
 import { money } from '../pricing/util.js';
 import { useAuth } from '../auth/AuthProvider';
 import { Empty, ErrorScreen, Loading, PageHead } from '../components/ui';
@@ -11,6 +12,7 @@ export default function Quotes() {
   const [search, setSearch] = useState('');
   const { loading, error, data, reload } = useLoad(() =>
     q(supabase.from('quotes').select('id, name, location, currency, total_local, total_usd, revision, updated_at, job:jobs(id, job_no)').order('updated_at', { ascending: false }).limit(300)), []);
+  useLive(['quotes'], () => reload({ silent: true }));
   if (loading) return <Loading />;
   if (error) return <ErrorScreen error={error} onRetry={reload} />;
   const s = search.trim().toLowerCase();
@@ -50,6 +52,7 @@ export function JobQuotes({ job }) {
   const canWrite = can('quote.write', job.front_office_id) || can('quote.write', job.back_office_id);
   const { loading, error, data, reload } = useLoad(() =>
     q(supabase.from('quotes').select('id, name, location, currency, total_local, total_usd, revision, updated_at').eq('job_id', job.id).order('updated_at', { ascending: false })), [job.id]);
+  useLive([{ table: 'quotes', filter: `job_id=eq.${job.id}` }], () => reload({ silent: true }));
   if (loading) return <Loading />;
   if (error) return <ErrorScreen error={error} onRetry={reload} />;
   return (

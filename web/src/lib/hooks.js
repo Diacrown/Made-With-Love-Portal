@@ -5,15 +5,17 @@ import { logError } from './errors';
 export function useLoad(loader, deps) {
   const [state, setState] = useState({ loading: true, error: null, data: null });
   const seq = useRef(0);
-  const run = useCallback(async () => {
+  // reload({ silent: true }) refreshes in place (live updates): no spinner, and a failure keeps what is shown.
+  const run = useCallback(async (opts) => {
+    const silent = opts?.silent === true;
     const my = ++seq.current;
-    setState((s) => ({ ...s, loading: true, error: null }));
+    if (!silent) setState((s) => ({ ...s, loading: true, error: null }));
     try {
       const data = await loader();
       if (my === seq.current) setState({ loading: false, error: null, data });
     } catch (error) {
       logError(error);
-      if (my === seq.current) setState({ loading: false, error, data: null });
+      if (my === seq.current && !silent) setState({ loading: false, error, data: null });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);

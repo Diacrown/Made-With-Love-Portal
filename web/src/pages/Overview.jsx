@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { supabase, q } from '../lib/supabase';
 import { useLoad } from '../lib/hooks';
+import { useLive } from '../lib/live';
 import { useRefData } from '../lib/refdata';
 import { useAuth } from '../auth/AuthProvider';
 import { myTurn } from '../lib/workflow';
@@ -20,6 +21,7 @@ export default function Overview() {
     ms.forEach((m) => { (msByJob[m.job_id] ||= []).push(m.code); });
     return { jobs, msByJob };
   }, [canJobs]);
+  useLive(['jobs', 'job_milestones'], () => reload({ silent: true }), { enabled: canJobs });
 
   if (loading) return <Loading />;
   if (error) return <ErrorScreen error={error} onRetry={reload} />;

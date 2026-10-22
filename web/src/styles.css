@@ -318,3 +318,16 @@ a.subtab:hover { text-decoration: none; color: var(--ink); }
 .probe-mark { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: #eceef1; font-weight: 700; }
 .probe-mark.ok { background: var(--good); color: #fff; }
 .probe-mark.bad { background: var(--bad); color: #fff; }
+
+/* ---------- live sync (Supabase Realtime) ---------- */
+.live-badge { display: inline-flex; align-items: center; gap: 6px; font: 12px/1 var(--mono, ui-monospace, monospace); padding: 5px 9px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); white-space: nowrap; }
+.live-badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #b9bec7; }
+.live-badge.live { color: var(--good); border-color: color-mix(in srgb, var(--good) 40%, transparent); }
+.live-badge.live::before { background: var(--good); animation: live-pulse 2s ease-in-out infinite; }
+.live-badge.offline::before { background: #e0b05a; }
+@keyframes live-pulse { 50% { opacity: 0.35; } }
+tr.flash td { animation: row-flash 4s ease-out; }
+@keyframes row-flash { from { background: color-mix(in srgb, var(--good) 22%, transparent); } to { background: transparent; } }
+.live-note { display: flex; align-items: center; gap: 10px; justify-content: space-between; margin-bottom: 12px; }
+.toast a { color: inherit; text-decoration: underline; }
+@media (prefers-reduced-motion: reduce) { .live-badge.live::before, tr.flash td { animation: none; } }

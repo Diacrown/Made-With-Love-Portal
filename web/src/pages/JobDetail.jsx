@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { supabase, q } from '../lib/supabase';
 import { useLoad, fmtDate } from '../lib/hooks';
+import { useLive } from '../lib/live';
 import { useRefData, OWNER_LABEL, JOB_TYPE_LABEL, statusText } from '../lib/refdata';
 import { useAuth } from '../auth/AuthProvider';
 import { checklistFor, movesFor, statusOptions } from '../lib/workflow';
@@ -34,6 +35,22 @@ export default function JobDetail() {
     const names = ids.length ? await q(supabase.rpc('staff_names', { p_ids: ids })) : [];
     return { job, ms, hist, names: Object.fromEntries(names.map((n) => [n.id, n.full_name])) };
   }, [id]);
+
+  // Live: other people's changes refresh this job. On the Specification and CAD tabs a refresh could
+  // interrupt typing, so those tabs show a notice with a Refresh button instead.
+  const [stale, setStale] = useState(false);
+  const editingTab = tab === 'spec' || tab === 'cad';
+  const jobFilter = /^\d+$/.test(id) ? id : '0';
+  useLive([
+    { table: 'jobs', filter: `id=eq.${jobFilter}` },
+    { table: 'job_stage_history', filter: `job_id=eq.${jobFilter}` },
+    { table: 'job_milestones', filter: `job_id=eq.${jobFilter}` },
+    { table: 'cad_versions', filter: `job_id=eq.${jobFilter}` },
+  ], (p) => {
+    const by = p.new?.changed_by ?? p.new?.reviewed_by ?? p.new?.submitted_by ?? p.new?.set_by ?? null;
+    if (!editingTab) reload({ silent: true });
+    else if (p.table !== 'jobs' && by !== user.id) setStale(true);
+  });
 
   if (loading && !data) return <Loading />;
   if (error) return <ErrorScreen error={error} onRetry={reload} />;
@@ -79,7 +96,7 @@ export default function JobDetail() {
 
       <div className="subtabs" role="tablist">
         {[['overview', 'Overview'], ['spec', 'Specification'], ['cad', 'CAD'], ...(canQuote ? [['quotes', 'Quotes']] : []), ['customer', 'Customer'], ['activity', `Activity (${hist.length})`]].map(([k, l]) => (
-          <button key={k} role="tab" aria-selected={tab === k} className={`subtab ${tab === k ? 'active' : ''}`} onClick={() => setTab(k)}>{l}</button>
+          <button key={k} role="tab" aria-selected={tab === k} className={`subtab ${tab === k ? 'active' : ''}`} onClick={() => { setTab(k); if (stale) { setStale(false); reload({ silent: true }); } }}>{l}</button>
         ))}
       </div>
 
@@ -152,6 +169,11 @@ export default function JobDetail() {
         </>
       )}
 
+      {stale && editingTab && (
+        <div className="note info live-note" role="status">
+          Someone else just updated this job. <button className="btn sm" onClick={() => { setStale(false); reload(); }}>Refresh</button>
+        </div>
+      )}
       {tab === 'spec' && <JobSpec job={job} editable={specEditable} onSaved={reload} />}
       {tab === 'cad' && <CadTab job={job} onChanged={reload} />}
       {tab === 'quotes' && canQuote && <JobQuotes job={job} />}

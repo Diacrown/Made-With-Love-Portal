@@ -1,7 +1,10 @@
-import { NavLink, Navigate, Outlet, useLocation } from 'react-router-dom';
+import { Link, NavLink, Navigate, Outlet, useLocation } from 'react-router-dom';
+import { supabase, q } from '../lib/supabase';
+import { useLive, useLiveStatus } from '../lib/live';
+import { statusText } from '../lib/refdata';
 import { useAuth } from '../auth/AuthProvider';
 import { RefDataProvider, useRefData } from '../lib/refdata';
-import { ErrorScreen, Loading } from './ui';
+import { ErrorScreen, Loading, useToast } from './ui';
 
 const ROLE_LABEL = {
   admin: 'Admin', office_admin: 'Office admin', front_office: 'Front office',
@@ -31,6 +34,32 @@ function Tabs() {
   );
 }
 
+function LiveBadge() {
+  const st = useLiveStatus();
+  const label = st === 'live' ? 'Live' : st === 'offline' ? 'Offline' : 'Connecting';
+  return <span className={`live-badge ${st}`} title="Screens refresh by themselves when someone else changes the data (Supabase Realtime)">{label}</span>;
+}
+
+/** Toast when someone else moves a job you can see (RLS decides which events arrive). */
+function ActivityToasts({ rd: ref }) {
+  const { user, can } = useAuth();
+  const toast = useToast();
+  useLive([{ table: 'job_stage_history', event: 'INSERT' }], async (p) => {
+    const h = p.new;
+    if (!h || !h.changed_by || h.changed_by === user?.id || ref.loading) return;
+    try {
+      const [job] = await q(supabase.from('jobs').select('id, job_no').eq('id', h.job_id).limit(1));
+      if (!job) return;
+      const names = await q(supabase.rpc('staff_names', { p_ids: [h.changed_by] }));
+      const what = h.from_stage_id !== h.to_stage_id
+        ? `moved to ${ref.stageById[h.to_stage_id]?.name || 'a new stage'}`
+        : statusText(ref.statusByCode[h.to_status], false) || 'status changed';
+      toast(<><Link to={`/jobs/${job.id}`} className="mono">{job.job_no}</Link> {what} · by {names[0]?.full_name || 'a colleague'}</>, 'good');
+    } catch { /* a toast is optional */ }
+  }, { debounce: 0, enabled: !!user && can('job.read') });
+  return null;
+}
+
 function Shell() {
   const { profile, grants, signOut } = useAuth();
   const ref = useRefData();
@@ -47,9 +76,11 @@ function Shell() {
             <b>{profile?.full_name || profile?.email}</b>
             <small>{grants.map((g) => `${ROLE_LABEL[g.role] || g.role} · ${g.office}`).join('  |  ')}</small>
           </div>
+          <LiveBadge />
           <button className="btn" onClick={() => signOut()}>Sign out</button>
         </div>
       </header>
+      {!ref.loading && !ref.error && <ActivityToasts rd={ref} />}
       <Tabs />
       <main className="content">
         {ref.loading ? <Loading /> : ref.error ? <ErrorScreen error={ref.error} onRetry={ref.reload} /> : <Outlet />}
