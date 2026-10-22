@@ -65,7 +65,7 @@ checks as (
   -- 2. structure
   union all
   select 'structure', 'Every migration is applied (expect 12)',
-         case when (select count(*) from supabase_migrations.schema_migrations) >= 12 then 'OK' else 'FAIL' end,
+         case when (select count(*) from supabase_migrations.schema_migrations) >= 14 then 'OK' else 'FAIL' end,
          (select count(*) || ' applied, latest ' || coalesce(max(version), '-') from supabase_migrations.schema_migrations)
   union all
   select 'structure', 'Foreign keys have an index (speed)',
